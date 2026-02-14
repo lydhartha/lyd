@@ -1,9 +1,5 @@
-import React from 'react'
+import { ComponentExample } from "@/components/component-example";
 
-export default function page() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold underline">AYO AYO AYO</h1>
-    </div>
-  )
+export default function Page() {
+return <ComponentExample />;
 }
