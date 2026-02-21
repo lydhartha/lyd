@@ -159,7 +159,7 @@ export default function Header() {
             {/* Right actions */}
             <div className="flex items-center gap-5">
               <a
-                href="#"
+                href="/auth"
                 className="hidden items-center gap-2 text-sm text-black/80 hover:text-black md:flex"
               >
                 <User className="h-4 w-4 text-black/70" />
