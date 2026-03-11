@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { adminLogout } from "./action";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { AdminLayoutClient } from "./AdminLayoutClient"; // client wrapper
 
 export default async function AdminLayout({
   children,
@@ -33,7 +32,6 @@ export default async function AdminLayout({
       <header className="border-b border-black/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <p className="text-sm font-semibold text-black/70">Admin Panel</p>
-
           <form action={adminLogout}>
             <button
               type="submit"
@@ -44,11 +42,7 @@ export default async function AdminLayout({
           </form>
         </div>
       </header>
-
-      <main className="mx-auto max-w-6xl px-6 py-6">
-        {/* Wrap children in client TooltipProvider */}
-        <AdminLayoutClient>{children}</AdminLayoutClient>
-      </main>
+      <main className="mx-auto max-w-6xl px-6 py-6">{children}</main>
     </div>
   );
 }

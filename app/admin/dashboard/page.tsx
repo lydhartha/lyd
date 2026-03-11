@@ -1,55 +1,50 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function Page() {
+export default async function AdminPage() {
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email, role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") {
+    redirect("/");
+  }
+
+  const userEmail = profile?.email ?? user.email ?? "No email available";
+  const userRole = profile?.role ?? "unknown";
+
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Build Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  )
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <section className="rounded-lg border border-black/10 bg-white p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-black/50">
+            Authenticated User
+          </p>
+          <p className="mt-2 text-base font-semibold text-black">{userEmail}</p>
+          <p className="mt-1 text-xs text-black/60">ID: {user.id}</p>
+        </section>
+        <section className="rounded-lg border border-black/10 bg-white p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-black/50">
+            Role
+          </p>
+          <p className="mt-2 text-base font-semibold capitalize text-black">
+            {userRole}
+          </p>
+        </section>
+      </div>
+    </div>
+  );
 }
